@@ -14,8 +14,7 @@ class User(db.Model):
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
 
-  # lessons = a list of Lesson objects
-  # videos = a list of Video objects
+  # lessons = a list of Lesson objects authored by user
 
     def __repr__(self):
         return f'<User user_id={self.user_id} email={self.email}>'
@@ -29,54 +28,101 @@ class Lesson(db.Model):
     lesson_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    # How should I handle tags? 
+    public = db.Column(db.Boolean)
 
-    user = db.relationship('User', backref='lessons')
-    video = db.relationship('Video', backref='lessons')
-  # lessonVids = a list of lessonVid association objects
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
+                        nullable=False)
 
+    owner = db.relationship('User', backref = 'lessons')
+    # lesson_links = a list of lesson_link association objects
+
+    # Use owner_id even if there's an association table?
 
     def __repr__(self):
         return f'<Lesson lesson_id={self.lesson_id} title={self.title}>'
 
 
-class Video(db.Model):
-    """A favorite video."""
+class Link(db.Model):
+    """A favorite link."""
 
-    __tablename__ = 'videos'
+    __tablename__ = 'links'
 
-    video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    link = db.Column(db.String, nullable=False)
+    link_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     title = db.Column(db.String)
-    length = db.Column(db.Float)
-    notes = db.Column(db.Text)
+    url = db.Column(db.String, nullable=False)
+    link_type = db.Column(db.String) # video, worksheet, online lesson, etc
+    vid_length = db.Column(db.Float) # if video, length in minutes
 
-    user = db.relationship('User', backref='activities')
-
-    # lessons = a list of Lesson objects
-    # lessonVids = a list of lessonVid association objects
-
+    # lesson_links = a list of lesson_link association objects
 
     def __repr__(self):
-        return f'<Video video_id={self.video_id} title={self.title}>'
+        return f'<Link link_id={self.link_id} title={self.title}>'
 
 
-class LessonVid(db.Model):
-    """An Lesson-Video association table."""
+class Lesson_Link(db.Model):
+    """An Lesson-Link association table."""
 
-    __tablename__ = 'LessonVids' 
+    __tablename__ = 'lesson_links' 
 
-    lessonVid_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
+    ll_assoc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    link_id = db.Column(db.Integer, db.ForeignKey('links.link_id'))
     lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
 
-    video = db.relationship('Video', backref='lessonVids')
-    lesson = db.relationship('Lesson', backref='lessonVids')
+    link = db.relationship('Link', backref='lesson_links')
+    lesson = db.relationship('Lesson', backref='lesson_links')
 
     def __repr__(self):
-        return f'<VidActivity vidAct_id={self.vidAct_id}>'
+        return f'<Lesson_Link ll_assoc_id={self.ll_assoc_id}>'
+
+
+class Tag(db.Model):
+    """A category for sorting videos."""
+
+    __tablename__ = 'tags' 
+    # Would it make more sense to have the name be the primary key?
+    tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    category = db.Column(db.String)
+
+    # link = db.relationship('Link', backref='lesson_links')
+    # lesson = db.relationship('Lesson', backref='lesson_links')
+
+    def __repr__(self):
+        return f'<Tag category={self.category} name={self.name}>'
+
+
+class Lesson_Tags(db.Model):
+    """An Lesson-Tag association table."""
+
+    __tablename__ = 'lesson_tags' 
+
+    ltag_assoc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ### If tag_name becomes primary key, this needs to change. 
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.tag_id'))
+    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
+
+    link = db.relationship('Link', backref='lesson_tags')
+    lesson = db.relationship('Lesson', backref='lesson_tags')
+
+    def __repr__(self):
+        return f'<Lesson_Tag ltag_assoc_id={self.ltag_assoc_id}>'
+
+
+class User_Lessons(db.Model):
+    """An User-Lesson assoc. table that enables favorite lessons feature."""
+
+    __tablename__ = 'user_lessons' 
+
+    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'), 
+                          nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
+                        nullable=False)
+    author_id = db.Column(db.Integer, nullable=False)
+
+    
+
+    def __repr__(self):
+        return f'<User_Lesson uless_assoc_id={self.ltag_assoc_id}>'
     
 
 def connect_to_db(flask_app, db_uri='postgresql:///edvid', echo=False):
@@ -97,6 +143,4 @@ if __name__ == '__main__':
 
 
 # N.B. - Figure out how to add in subject & grade once framework works.  
-# how do I store in a way that's searchable and filter-able?
-# subject = db.Column(db.String)
-# grade_level = db.Column(db.String)
+
