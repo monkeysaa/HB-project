@@ -10,14 +10,18 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String, unique=True)
-    password = db.Column(db.String)
+    user_id = db.Column(db.Integer,
+                        autoincrement=True,
+                        primary_key=True
+                        )
+    email = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
   # lessons = a list of Lesson objects authored by user
+  # faves = a list of Favorite objects identified by user
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} email={self.email}>'
+        return f'<User id={self.user_id} email={self.email}>'
 
 
 class Lesson(db.Model):
@@ -29,50 +33,35 @@ class Lesson(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
     public = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
-                        nullable=False)
-
-    owner = db.relationship('User', backref = 'lessons')
-    # lesson_links = a list of lesson_link association objects
-
-    # Use owner_id even if there's an association table?
+    author = db.relationship('User', backref = 'lessons')
+    # components = a list of component objects
+    # faves = a list of favorite objects 
 
     def __repr__(self):
-        return f'<Lesson lesson_id={self.lesson_id} title={self.title}>'
+        return f'<Lesson id={self.lesson_id} title={self.title}>'
 
 
-class Link(db.Model):
-    """A favorite link."""
+class Component(db.Model):
+    """A component within a lesson."""
 
-    __tablename__ = 'links'
+    __tablename__ = 'components'
 
-    link_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    title = db.Column(db.String)
-    url = db.Column(db.String, nullable=False)
-    link_type = db.Column(db.String) # video, worksheet, online lesson, etc
+    compt_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    compt_type = db.Column(db.String, nullable=False) # video, worksheet, image, text, etc
+    text = db.Column(db.Text)
+    name = db.Column(db.String)
+    url = db.Column(db.String)
     vid_length = db.Column(db.Float) # if video, length in minutes
+    lesson_id = db.Column(db.Integer, 
+                          db.ForeignKey('lessons.lesson_id'))
 
-    # lesson_links = a list of lesson_link association objects
-
-    def __repr__(self):
-        return f'<Link link_id={self.link_id} title={self.title}>'
-
-
-class Lesson_Link(db.Model):
-    """An Lesson-Link association table."""
-
-    __tablename__ = 'lesson_links' 
-
-    ll_assoc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    link_id = db.Column(db.Integer, db.ForeignKey('links.link_id'))
-    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
-
-    link = db.relationship('Link', backref='lesson_links')
-    lesson = db.relationship('Lesson', backref='lesson_links')
+    lesson = db.relationship('Lesson', backref='components')
+    # content_tags = A list of content-tag objects
 
     def __repr__(self):
-        return f'<Lesson_Link ll_assoc_id={self.ll_assoc_id}>'
+        return f'<Component id={self.compt_id} name={self.name}>'
 
 
 class Tag(db.Model):
@@ -84,48 +73,47 @@ class Tag(db.Model):
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
 
-    # link = db.relationship('Link', backref='lesson_links')
-    # lesson = db.relationship('Lesson', backref='lesson_links')
+    # content_tags - A list of content-tag objects
 
     def __repr__(self):
         return f'<Tag category={self.category} name={self.name}>'
 
 
-class Lesson_Tags(db.Model):
-    """An Lesson-Tag association table."""
+class Content_Tag(db.Model):
+    """An association table that assigns tags to lessons or components."""
 
-    __tablename__ = 'lesson_tags' 
+    __tablename__ = 'content_tags' 
 
-    ltag_assoc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    ### If tag_name becomes primary key, this needs to change. 
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.tag_id'))
+    ct_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.tag_id'))
     lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
-
-    link = db.relationship('Link', backref='lesson_tags')
-    lesson = db.relationship('Lesson', backref='lesson_tags')
+    compt_id = db.Column(db.Integer, db.ForeignKey('components.compt_id'))
+    
+    tag = db.relationship('Tag', backref='content_tags')
+    component = db.relationship('Component', backref='content_tags')
+    lesson = db.relationship('Lesson', backref='content_tags')
 
     def __repr__(self):
-        return f'<Lesson_Tag ltag_assoc_id={self.ltag_assoc_id}>'
+        return f'<Content-Tag {self.ct_id} attaches {self.tag.name} to target>'
 
 
-class User_Lessons(db.Model):
-    """An User-Lesson assoc. table that enables favorite lessons feature."""
+class Fave(db.Model):
+    """A favorites middle table linking users to liked lessons."""
 
-    __tablename__ = 'user_lessons' 
+    __tablename__ = 'faves'
 
-    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'), 
-                          nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
-                        nullable=False)
-    author_id = db.Column(db.Integer, nullable=False)
-
+    fave_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
+    liker_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
+    liker = db.relationship('User', backref='faves')
+    lesson = db.relationship('Lesson', backref='faves')
 
     def __repr__(self):
-        return f'<User_Lesson uless_assoc_id={self.ltag_assoc_id}>'
+        return f'<Favorited! {self.liker.email} likes {self.lesson.title}>'
     
 
-def connect_to_db(flask_app, db_uri='postgresql:///edvid', echo=False):
+def connect_to_db(flask_app, db_uri='postgresql:///lessons', echo=False):
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     flask_app.config['SQLALCHEMY_ECHO'] = False
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -140,7 +128,5 @@ if __name__ == '__main__':
     from server import app
     
     connect_to_db(app)  
-
-
-# N.B. - Figure out how to add in subject & grade once framework works.  
+ 
 
