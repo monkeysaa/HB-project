@@ -91,12 +91,12 @@ class Tag(db.Model):
     tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
-    # OLD CODE: 
-    # lessons = db.relationship('Lesson', secondary='lesson_tags', viewonly=True)
-    # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
+                                                                                    # OLD CODE: 
+                                                                                    # lessons = db.relationship('Lesson', secondary='lesson_tags', viewonly=True)
+                                                                                    # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
 
     # lessons - A list of lesson objects (via Lesson_Tag assoc table)
-    # comps - A list of component objects (via Component_Tag assoc table)
+    # comps - A list of comp objects (via Comp_Tag assoc table)
 
     def __repr__(self):
         return f'<Tag {self.category} {self.name}>'
@@ -167,7 +167,7 @@ class Fave_Comps(db.Model):
     liker_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
     liker = db.relationship('User', backref='fave_comps')
-    comp = db.relationship('Lesson', backref='likers')
+    comp = db.relationship('Comp', backref='likers')
 
     def __repr__(self):
         return f'<Favorited! {self.liker.email} likes {self.comp.name}>'
