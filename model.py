@@ -36,8 +36,10 @@ class Lesson(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
     author = db.relationship('User', backref = 'lessons')
-    # components = a list of component objects
-    # faves = a list of favorite objects 
+
+    # components = a list of Component objects
+    # faves = a list of Fave objects 
+    # tags = a list of Tag objects
 
     def __repr__(self):
         return f'<Lesson id={self.lesson_id} title={self.title}>'
@@ -58,7 +60,8 @@ class Component(db.Model):
                           db.ForeignKey('lessons.lesson_id'))
 
     lesson = db.relationship('Lesson', backref='components')
-    # content_tags = A list of content-tag objects
+
+    # tags = A list of tag objects
 
     def __repr__(self):
         return f'<Component id={self.compt_id} name={self.name}>'
@@ -73,29 +76,36 @@ class Tag(db.Model):
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
 
-    # content_tags - A list of content-tag objects
+    # components = db.relationship('Content_Tag')
+    # lessons = db.relationship('Content_Tag')
+
 
     def __repr__(self):
         return f'<Tag category={self.category} name={self.name}>'
 
 
 class Content_Tag(db.Model):
-    """An association table that assigns tags to lessons or components."""
-
-    __tablename__ = 'content_tags' 
-
-    ct_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tags.tag_id'))
-    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
-    compt_id = db.Column(db.Integer, db.ForeignKey('components.compt_id'))
     
-    tag = db.relationship('Tag', backref='content_tags')
-    component = db.relationship('Component', backref='content_tags')
-    lesson = db.relationship('Lesson', backref='content_tags')
+    __tablename__ = 'content_tags'
+
+    tag_id = db.Column(db.Integer, 
+                       db.ForeignKey('tags.tag_id'), 
+                       primary_key=True
+                       )
+    lesson_id = db.Column(db.Integer, 
+                          db.ForeignKey('lessons.lesson_id')
+                          )
+    compt_id = db.Column(db.Integer, db.ForeignKey('components.compt_id'))
+
+    component = db.relationship('Component', backref='tags')
+    lesson = db.relationship('Lesson', backref='tags')
+    tag = db.relationship('Tag')
+    # Need help adding backrefs on Tags table, given double-association
+    # want to set up an if statement, but which can we use? 
 
     def __repr__(self):
-        return f'<Content-Tag {self.ct_id} attaches {self.tag.name} to target>'
-
+        return f'<Assoc for Tag {self.tag.name}>'
+ 
 
 class Fave(db.Model):
     """A favorites middle table linking users to liked lessons."""
