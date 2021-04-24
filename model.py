@@ -37,7 +37,7 @@ class Lesson(db.Model):
 
     author = db.relationship('User', backref = 'lessons')
 
-    # components = a list of Component objects
+    # comps = a list of Component objects via Lesson_Components
     # faves = a list of Fave objects 
     # tags = a list of Tag objects
 
@@ -45,26 +45,42 @@ class Lesson(db.Model):
         return f'<Lesson id={self.lesson_id} title={self.title}>'
 
 
-class Component(db.Model):
+class Comp(db.Model):
     """A component within a lesson."""
 
-    __tablename__ = 'components'
+    __tablename__ = 'comps'
 
-    compt_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    compt_type = db.Column(db.String, nullable=False) # video, worksheet, image, text, etc
+    comp_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    comp_type = db.Column(db.String, nullable=False) # video, worksheet, image, text, etc
     text = db.Column(db.Text)
     name = db.Column(db.String)
     url = db.Column(db.String)
     vid_length = db.Column(db.Float) # if video, length in minutes
-    lesson_id = db.Column(db.Integer, 
-                          db.ForeignKey('lessons.lesson_id'))
 
-    lesson = db.relationship('Lesson', backref='components')
-
+    # lessons = db.relationship via Lesson_Components
     # tags = A list of tag objects
 
     def __repr__(self):
-        return f'<Component id={self.compt_id} name={self.name}>'
+        return f'<Component id={self.comp_id} name={self.name}>'
+
+
+class Lesson_Comps(db.Model):
+    
+    __tablename__ = 'lesson_comps'
+
+    comp_id = db.Column(db.Integer, 
+                       db.ForeignKey('comps.comp_id'), 
+                       primary_key=True
+                       )
+    lesson_id = db.Column(db.Integer, 
+                          db.ForeignKey('lessons.lesson_id'),
+                          primary_key=True
+                          )
+    lesson = db.relationship('Lesson', backref='comps')
+    comp = db.relationship('Comp', backref='lessons')
+
+    def __repr__(self):
+        return f'<Assoc {self.comp.name} for {self.lesson.title}>'
 
 
 class Tag(db.Model):
@@ -75,47 +91,62 @@ class Tag(db.Model):
     tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
+    # OLD CODE: 
+    # lessons = db.relationship('Lesson', secondary='lesson_tags', viewonly=True)
+    # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
 
-    lessons = db.relationship('Lesson', secondary='content_tags', viewonly=True)
-    components = db.relationship('Component', secondary='content_tags', viewonly=True)
-
-    # content_tags, with ties to both 
-
+    # lessons - A list of lesson objects (via Lesson_Tag assoc table)
+    # comps - A list of component objects (via Component_Tag assoc table)
 
     def __repr__(self):
         return f'<Tag {self.category} {self.name}>'
 
 
-class Content_Tag(db.Model):
+class Lesson_Tag(db.Model):
     
-    __tablename__ = 'content_tags'
+    __tablename__ = 'lesson_tags'
 
     tag_id = db.Column(db.Integer, 
                        db.ForeignKey('tags.tag_id'), 
                        primary_key=True
                        )
     lesson_id = db.Column(db.Integer, 
-                          db.ForeignKey('lessons.lesson_id')
+                          db.ForeignKey('lessons.lesson_id'),
+                          primary_key=True
                           )
-    compt_id = db.Column(db.Integer, db.ForeignKey('components.compt_id'))
-
-    component = db.relationship('Component', backref='tags')
     lesson = db.relationship('Lesson', backref='tags')
-    tag = db.relationship('Tag', backref='content_tags')
+    tag = db.relationship('Tag', backref='lessons')
 
     def __repr__(self):
-        if self.component == None:
-            return f'<Assoc {self.tag.name} for {self.lesson.title}>'
-        elif self.lesson == None:
-            return f'<Assoc {self.tag.name} for {self.component.name}>'
+        return f'<Assoc {self.tag.name} for {self.lesson.title}>'
+
+
+class Comp_Tag(db.Model):
+    
+    __tablename__ = 'comp_tags'
+
+    tag_id = db.Column(db.Integer, 
+                       db.ForeignKey('tags.tag_id'), 
+                       primary_key=True
+                       )
+    comp_id = db.Column(db.Integer, 
+                        db.ForeignKey('comps.comp_id'), 
+                        primary_key=True
+                        )
+
+    component = db.relationship('Comp', backref='tags')
+    tag = db.relationship('Tag', backref='comps')
+
+    def __repr__(self):
+        return f'<Assoc {self.tag.name} for {self.comp.name}>'
  
 
-class Fave(db.Model):
+class Fave_Lessons(db.Model):
     """A favorites middle table linking users to liked lessons."""
 
-    __tablename__ = 'faves'
+    __tablename__ = 'fave_lessons'
 
-    fave_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.lesson_id'))
     liker_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
@@ -124,6 +155,22 @@ class Fave(db.Model):
 
     def __repr__(self):
         return f'<Favorited! {self.liker.email} likes {self.lesson.title}>'
+
+
+class Fave_Comps(db.Model):
+    """A favorites middle table linking users to liked components."""
+
+    __tablename__ = 'fave_comps'
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    comp_id = db.Column(db.Integer, db.ForeignKey('comps.comp_id'))
+    liker_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    
+    liker = db.relationship('User', backref='fave_comps')
+    comp = db.relationship('Lesson', backref='likers')
+
+    def __repr__(self):
+        return f'<Favorited! {self.liker.email} likes {self.comp.name}>'
     
 
 def connect_to_db(flask_app, db_uri='postgresql:///lessons', echo=False):
