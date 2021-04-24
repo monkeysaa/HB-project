@@ -21,6 +21,6 @@ def homepage():
     return render_template('homepage.html')
 
 if __name__ == '__main__':
-    app.secret_key = "SECRET!" #Do I want this here or on line 12?
+    # app.secret_key = "SECRET!" #Do I want this here or on line 12?
     connect_to_db(app,echo=False)
     app.run(host='0.0.0.0', debug=True)

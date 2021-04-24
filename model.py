@@ -76,12 +76,14 @@ class Tag(db.Model):
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
 
-    # components = db.relationship('Content_Tag')
-    # lessons = db.relationship('Content_Tag')
+    lessons = db.relationship('Lesson', secondary='content_tags', viewonly=True)
+    components = db.relationship('Component', secondary='content_tags', viewonly=True)
+
+    # content_tags, with ties to both 
 
 
     def __repr__(self):
-        return f'<Tag category={self.category} name={self.name}>'
+        return f'<Tag {self.category} {self.name}>'
 
 
 class Content_Tag(db.Model):
@@ -99,12 +101,13 @@ class Content_Tag(db.Model):
 
     component = db.relationship('Component', backref='tags')
     lesson = db.relationship('Lesson', backref='tags')
-    tag = db.relationship('Tag')
-    # Need help adding backrefs on Tags table, given double-association
-    # want to set up an if statement, but which can we use? 
+    tag = db.relationship('Tag', backref='content_tags')
 
     def __repr__(self):
-        return f'<Assoc for Tag {self.tag.name}>'
+        if self.component == None:
+            return f'<Assoc {self.tag.name} for {self.lesson.title}>'
+        elif self.lesson == None:
+            return f'<Assoc {self.tag.name} for {self.component.name}>'
  
 
 class Fave(db.Model):
