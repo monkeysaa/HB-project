@@ -20,6 +20,28 @@ def homepage():
     return render_template('homepage.html')
 
 
+@app.route('/users', methods=['POST'])
+def register_user():
+    """View all users."""
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    # Check if user email is in the database
+    user = crud.get_user_by_email(email)
+    if user:
+        flash('Email is already in use. Try again.')
+        return redirect('/')
+        
+    else:
+        crud.create_user(email, password)
+        user = session['user']
+        lessons = crud.get_lessons_by_user(user.user_id)
+        flash('Account created!') # REMOVABLE?
+        return render_template('user_profile.html', user=user, lessons=lessons)
+
+
+# WAT. NEW USERS HAVE NO LESSONS. FIGURE THIS SHIT OUT.
 @app.route('/users/<new_user>')
 def new_user(new_user):
     user = crud.get_user_by_id(new_user)
@@ -32,7 +54,7 @@ def new_user(new_user):
 def all_lessons():
     """View all lessons."""
 
-    lessons = crud.get_lessons()
+    lessons = crud.get_all_lessons()
     return render_template('all_lessons.html', lessons=lessons)
 
 
@@ -88,7 +110,7 @@ def check_if_user():
     try:
         if session['user']:
             user = session['user']
-            lessons = crud.get_lessons()
+            lessons = crud.get_lessons_by_user(user.user_id)
             return render_template('loginpage.html', user=user, lessons=lessons)
     except:
         flash('Please log in first.')

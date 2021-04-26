@@ -64,7 +64,7 @@ class Comp(db.Model):
         return f'<Component id={self.comp_id} name={self.name}>'
 
 
-class Lesson_Comps(db.Model):
+class Lesson_Comp(db.Model):
     
     __tablename__ = 'lesson_comps'
 
@@ -91,10 +91,7 @@ class Tag(db.Model):
     tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String)
-                                                                                    # OLD CODE: 
-                                                                                    # lessons = db.relationship('Lesson', secondary='lesson_tags', viewonly=True)
-                                                                                    # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
-
+                                                                                  # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
     # lessons - A list of lesson objects (via Lesson_Tag assoc table)
     # comps - A list of comp objects (via Comp_Tag assoc table)
 
@@ -134,14 +131,14 @@ class Comp_Tag(db.Model):
                         primary_key=True
                         )
 
-    component = db.relationship('Comp', backref='tags')
+    comp = db.relationship('Comp', backref='tags')
     tag = db.relationship('Tag', backref='comps')
 
     def __repr__(self):
         return f'<Assoc {self.tag.name} for {self.comp.name}>'
  
 
-class Fave_Lessons(db.Model):
+class Fave_Lesson(db.Model):
     """A favorites middle table linking users to liked lessons."""
 
     __tablename__ = 'fave_lessons'
@@ -151,13 +148,13 @@ class Fave_Lessons(db.Model):
     liker_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
     liker = db.relationship('User', backref='faves')
-    lesson = db.relationship('Lesson', backref='faves')
+    lesson = db.relationship('Lesson', backref='likers')
 
     def __repr__(self):
         return f'<Favorited! {self.liker.email} likes {self.lesson.title}>'
 
 
-class Fave_Comps(db.Model):
+class Fave_Comp(db.Model):
     """A favorites middle table linking users to liked components."""
 
     __tablename__ = 'fave_comps'

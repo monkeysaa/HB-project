@@ -36,14 +36,8 @@ def create_comp(name, comp_type, url = None, text = None, vid_length = None):
 
     return new_component
 
-def get_lessons_by_user(user_id):
-     """Return lessons by user"""
 
-     return Lesson.query.filter(Lesson.author_id == user_id).all()
-
-
-
-# Create associations?
+# CREATE ASSOCIATIONS
 # def lesson_comp()
 # def create_lesson_tag()
 # def create_comp_tag()
@@ -52,7 +46,13 @@ def get_lessons_by_user(user_id):
 #     """Create a new favorite."""
 
 
-def get_lessons():
+def get_lessons_by_user(user_id):
+     """Return lessons by user"""
+
+     return Lesson.query.filter(Lesson.author_id == user_id).all()
+
+
+def get_all_lessons():
     """Return all lessons."""
 
     return Lesson.query.all()
