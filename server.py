@@ -4,8 +4,12 @@ from flask import Flask
 from flask import (Flask, render_template, request, flash, session, redirect)
 from model import connect_to_db
 import crud
+import boto3
 
 from jinja2 import StrictUndefined
+
+# Let's use Amazon S3
+s3 = boto3.resource('s3')
 
 app = Flask(__name__)
 app.secret_key = "SECRET!"
@@ -16,6 +20,8 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def homepage():
     """View homepage."""
+    for bucket in s3.buckets.all():
+        print(bucket.name)
 
     return render_template('homepage.html')
 

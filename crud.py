@@ -36,14 +36,34 @@ def create_comp(name, comp_type, url = None, text = None, vid_length = None):
 
     return new_component
 
+def assign_comp_to_lesson(comp_id, lesson_id):
+    assoc = Lesson_Comp(lesson_id=lesson_id, comp_id=comp_id)
+
+    db.session.add(assoc)
+    db.session.commit()
+
+    return assoc
+
+def assign_tag_to_lesson(tag, lesson):
+    assoc = Lesson_Tag(lesson=lesson, tag=tag)
+
+    db.session.add(assoc)
+    db.session.commit()
+
+    return assoc
+
+def create_tag(name, category):
+    tag = Tag(name=name, category=category)
+
+    db.session.add(tag)
+    db.session.commit()
+
+    return tag
+
 
 # CREATE ASSOCIATIONS
-# def lesson_comp()
-# def create_lesson_tag()
-# def create_comp_tag()
 # def create fave_comp()
 # def create_fave_lesson(lesson_id, liker_id):
-#     """Create a new favorite."""
 
 
 def get_lessons_by_user(user_id):
@@ -70,10 +90,10 @@ def get_components():
     return Comp.query.all()
 
 
-def get_lesson_faves(user_id):
-    """Return all lessons favorited by this user."""
+# def get(user_id):
+#     """Return all lessons favorited by this user."""
 
-    return Fave_Lessons.query.filter(Fave_Lessons.liker_id == user_id).all()
+#     return Fave_Lessons.query.filter(Fave_Lessons.liker_id == user_id).all()
 
 
 def get_comp_faves(user_id):
