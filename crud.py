@@ -114,6 +114,25 @@ def get_lesson_by_id(lesson_id):
     return Lesson.query.get(lesson_id)
 
 
+def get_lesson_by_term(term):
+    """Basic: Get lessons by search term in title or description."""
+
+    lessons = Lesson.query.filter((Lesson.title.like(f'%{term}%')) | 
+    (Lesson.description.like(f'%{term}%'))).all()
+
+    matching_components = Comp.query.filter(
+        (Comp.name.like(f'%{term}%')) | 
+        (Comp.text.like(f'%{term}%'))).all()
+
+    for comp in matching_components:
+        for lesson in comp.lessons:
+            if lesson not in lessons:
+                lessons.append(lesson)
+
+    return lessons
+    
+
+
 def get_comp_by_id(comp_id):
     """Get components by ID."""
     

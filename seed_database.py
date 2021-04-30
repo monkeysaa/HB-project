@@ -13,7 +13,7 @@ connect_to_db(server.app, echo=False)
 db.create_all()
 
 # Load lesson data from JSON file
-with open('data/lessons.json') as f:
+with open('static/data/lessons.json') as f:
     lesson_data = json.loads(f.read())
 
 # Create users, store them in list so we can assign fake lessons to them
@@ -26,7 +26,7 @@ for n in range(3):
     users_in_db.append(user)
 
 # Load component data from JSON file
-with open('data/components.json') as f:
+with open('static/data/components.json') as f:
     comp_data = json.loads(f.read())
 
 # Create components, store them in list so we can use them

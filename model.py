@@ -36,10 +36,10 @@ class Lesson(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
     author = db.relationship('User', backref = 'lessons')
+    comps = db.relationship('Comp', secondary='lesson_comps', viewonly=True)
+    tags = db.relationship('Tag', secondary='lesson_tags', viewonly=True)
 
-    # comps = a list of Component objects via Lesson_Components
     # faves = a list of Fave objects 
-    # tags = a list of Tag objects
 
     def __repr__(self):
         return f'<Lesson id={self.lesson_id} title={self.title}>'
@@ -57,8 +57,8 @@ class Comp(db.Model):
     url = db.Column(db.String)
     vid_length = db.Column(db.Float) # if video, length in minutes
 
-    # lessons = db.relationship via Lesson_Components
-    # tags = A list of tag objects
+    lessons = db.relationship('Lesson', secondary='lesson_comps', viewonly=True)
+    tags = db.relationship('Tag', secondary='comp_tags', viewonly=True)
 
     def __repr__(self):
         return f'<Component id={self.comp_id} name={self.name}>'
@@ -76,8 +76,8 @@ class Lesson_Comp(db.Model):
                           db.ForeignKey('lessons.lesson_id'),
                           primary_key=True
                           )
-    lesson = db.relationship('Lesson', backref='comps')
-    comp = db.relationship('Comp', backref='lessons')
+    lesson = db.relationship('Lesson')
+    comp = db.relationship('Comp')
 
     def __repr__(self):
         return f'<Assoc {self.comp.name} for {self.lesson.title}>'
@@ -91,9 +91,9 @@ class Tag(db.Model):
     tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
     category = db.Column(db.String)
-                                                                                  # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
-    # lessons - A list of lesson objects (via Lesson_Tag assoc table)
-    # comps - A list of comp objects (via Comp_Tag assoc table)
+
+    lessons = db.relationship('Lesson', secondary='lesson_tags', viewonly=True)
+    comps = db.relationship('Comp', secondary='comp_tags', viewonly=True)
 
     def __repr__(self):
         return f'<Tag {self.category} {self.name}>'
@@ -111,8 +111,8 @@ class Lesson_Tag(db.Model):
                           db.ForeignKey('lessons.lesson_id'),
                           primary_key=True
                           )
-    lesson = db.relationship('Lesson', backref='tags')
-    tag = db.relationship('Tag', backref='lessons')
+    lesson = db.relationship('Lesson')
+    tag = db.relationship('Tag')
 
     def __repr__(self):
         return f'<Assoc {self.tag.name} for {self.lesson.title}>'
@@ -131,8 +131,8 @@ class Comp_Tag(db.Model):
                         primary_key=True
                         )
 
-    comp = db.relationship('Comp', backref='tags')
-    tag = db.relationship('Tag', backref='comps')
+    comp = db.relationship('Comp')
+    tag = db.relationship('Tag')
 
     def __repr__(self):
         return f'<Assoc {self.tag.name} for {self.comp.name}>'

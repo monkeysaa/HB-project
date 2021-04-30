@@ -125,6 +125,17 @@ def register_user():
     return render_template('user_profile.html', user=user, lessons=[])
 
 
+@app.route('/search', methods=['GET'])
+def search_lessons():
+    """Search for lesson by term."""
+    
+    term = request.args.get('term')
+    lessons = crud.get_lesson_by_term(term)
+
+    print(f'lessons = {lessons}')
+    return render_template('search.html', term=term, lessons=lessons)
+    
+
 @app.route('/post-form-data', methods=['POST'])
 def upload_image():
     """Process the cloudinary form."""
