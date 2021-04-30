@@ -3,57 +3,50 @@
 from flask import Flask
 from flask import (Flask, render_template, request, flash, session, redirect)
 from model import connect_to_db
+import cloudinary.uploader
 import crud
 import boto3
+import os 
 
 from jinja2 import StrictUndefined
-
-# Let's use Amazon S3
-s3 = boto3.resource('s3')
 
 app = Flask(__name__)
 app.secret_key = "SECRET!"
 
+# API INFO
+s3 = boto3.resource('s3')
+CLOUD_KEY = os.environ['CLOUDINARY_KEY']
+CLOUD_SECRET = os.environ['CLOUDINARY_SECRET']
+AWS_KEY = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+
 app.jinja_env.undefined = StrictUndefined
 
-# Add routes and view functions!
+
+# Routes and view functions!
 @app.route('/')
 def homepage():
     """View homepage."""
-    for bucket in s3.buckets.all():
-        print(bucket.name)
 
     return render_template('homepage.html')
 
 
-@app.route('/users', methods=['POST'])
-def register_user():
+# Later, remove this route.
+@app.route('/users')
+def all_users():
     """View all users."""
-
-    email = request.form.get('email')
-    password = request.form.get('password')
     
-    # Check if user email is in the database
-    user = crud.get_user_by_email(email)
-    if user:
-        flash('Email is already in use. Try again.')
-        return redirect('/')
-        
-    else:
-        crud.create_user(email, password)
-        user = session['user']
-        lessons = crud.get_lessons_by_user(user.user_id)
-        flash('Account created!') # REMOVABLE?
-        return render_template('user_profile.html', user=user, lessons=lessons)
+    users = crud.get_users()
+    return render_template('all_users.html', users=users)
 
 
-# WAT. NEW USERS HAVE NO LESSONS. FIGURE THIS SHIT OUT.
-@app.route('/users/<new_user>')
-def new_user(new_user):
-    user = crud.get_user_by_id(new_user)
-    lessons = crud.get_lessons_by_user(user.user_id)
+# View users' public lessons
+@app.route('/users/<user_id>')
+def show_public_lessons(user_id):
+    user = crud.get_user_by_id(user_id)
+    pub_lessons = crud.get_public_lessons(user.user_id)
 
-    return render_template('user_profile.html', user=user, lessons=lessons)
+    return render_template('user_profile.html', user=user, lessons=pub_lessons)
 
 
 @app.route('/lessons')
@@ -70,32 +63,19 @@ def show_lesson(lesson_id):
 
     lesson = crud.get_lesson_by_id(lesson_id)
     return render_template('lesson_details.html', lesson=lesson)
-# STOLEN FROM MOVIE_DETAILS.
-# <!--  <a href="/lessons/{{ lesson.lesson_id }}/rate_movie">
-#   Rate this movie!
-# </a> 
-
-# <img src="{{ movie.poster_path }}"> -->
-
-
-@app.route('/users')
-def all_users():
-    """View all users."""
-    
-    users = crud.get_users()
-    return render_template('all_users.html', users=users)
 
 
 @app.route('/login', methods=['POST'])
 def verify_user():
+    """Authenticate user and display profile page"""
 
     email = request.form.get('email')
     password = request.form.get('password')
 
-    user = crud.get_user_by_email(email)
-    user_lessons = crud.get_lessons_by_user(user.user_id)
-    
-    if user:
+    try: 
+        user = crud.get_user_by_email(email)
+        user_lessons = crud.get_lessons_by_user(user.user_id)
+        
         if password == user.password:
             session['user_id'] = user.user_id
             return render_template('user_profile.html', 
@@ -103,27 +83,64 @@ def verify_user():
         else:
             flash(f"Wrong password. It should be: {user.password}.")
             return redirect('/')
-    else:
+
+    except:
         flash("Email not in our system. Try again.")
         return redirect('/')
 
 
+# If someone types in login url by hand without logging in...
 @app.route('/login')
 def check_if_user():
     """Check for user, or redirect to homepage and prompt to login. """
-    # In case someone types in this link by hand without logging in.
 
     try:
         if session['user']:
             user = session['user']
             lessons = crud.get_lessons_by_user(user.user_id)
-            return render_template('loginpage.html', user=user, lessons=lessons)
+            return render_template(f'user_profile.html', 
+                                   user=user, lessons=lessons)
     except:
         flash('Please log in first.')
         return redirect('/')
 
 
+@app.route('/signup', methods=['POST'])
+def register_user():
+    """Create and log in a new user."""
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    # Check if user email is already in the database
+    user = crud.get_user_by_email(email)
+    try:
+        user = crud.create_user(email, password)
+    except:
+        flash('Email is already in use. Try again.')
+        return redirect('/')
+
+    session['user_id'] = user.user_id
+
+    return render_template('user_profile.html', user=user, lessons=[])
+
+
+@app.route('/post-form-data', methods=['POST'])
+def upload_image():
+    """Process the cloudinary form."""
+
+    my_file = request.files['my-file'] # note: request arg should match name var on form
+    result = cloudinary.uploader.upload(my_file, api_key=CLOUD_KEY, 
+                                        api_secret=CLOUD_SECRET,
+                                        cloud_name='hackbright')
+    img_url = result['secure_url']
+    img_url = crud.create_img(result['secure_url'])
+    # run a crud function that saves this img_url to the database and returns it. 
+
+    # work out display, e.g. <img src="{{ user.profile_url }}">
+    return f'<img src="{img_url}">'
+
+
 if __name__ == '__main__':
-    # app.secret_key = "SECRET!" #Do I want this here or on line 12?
     connect_to_db(app,echo=False)
     app.run(host='0.0.0.0', debug=True)

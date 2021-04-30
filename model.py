@@ -89,7 +89,7 @@ class Tag(db.Model):
     __tablename__ = 'tags' 
     # Would it make more sense to have the name be the primary key?
     tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     category = db.Column(db.String)
                                                                                   # comps = db.relationship('Component', secondary='component_tags', viewonly=True)
     # lessons - A list of lesson objects (via Lesson_Tag assoc table)

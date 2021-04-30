@@ -36,21 +36,6 @@ def create_comp(name, comp_type, url = None, text = None, vid_length = None):
 
     return new_component
 
-def assign_comp_to_lesson(comp_id, lesson_id):
-    assoc = Lesson_Comp(lesson_id=lesson_id, comp_id=comp_id)
-
-    db.session.add(assoc)
-    db.session.commit()
-
-    return assoc
-
-def assign_tag_to_lesson(tag, lesson):
-    assoc = Lesson_Tag(lesson=lesson, tag=tag)
-
-    db.session.add(assoc)
-    db.session.commit()
-
-    return assoc
 
 def create_tag(name, category):
     tag = Tag(name=name, category=category)
@@ -61,17 +46,26 @@ def create_tag(name, category):
     return tag
 
 
-# CREATE ASSOCIATIONS
-# def create fave_comp()
-# def create_fave_lesson(lesson_id, liker_id):
+# Assignations
+def assign_comp(comp, lesson):
+    assoc = Lesson_Comp(lesson=lesson, comp=comp)
+
+    db.session.add(assoc)
+    db.session.commit()
+
+    return assoc
 
 
-def get_lessons_by_user(user_id):
-     """Return lessons by user"""
+def assign_tag_to_lesson(tag, lesson):
+    assoc = Lesson_Tag(lesson=lesson, tag=tag)
 
-     return Lesson.query.filter(Lesson.author_id == user_id).all()
+    db.session.add(assoc)
+    db.session.commit()
+
+    return assoc
 
 
+# Searches
 def get_all_lessons():
     """Return all lessons."""
 
@@ -90,16 +84,28 @@ def get_components():
     return Comp.query.all()
 
 
-# def get(user_id):
-#     """Return all lessons favorited by this user."""
-
-#     return Fave_Lessons.query.filter(Fave_Lessons.liker_id == user_id).all()
-
-
 def get_comp_faves(user_id):
     """Return all components favorited by this user."""
 
     return Fave_Comps.query.filter(liker_id == user_id).all()
+
+
+def get_tag_by_name(name):
+    """Return tag by name"""
+    
+    return Tag.query.filter(Tag.name == name).first()
+
+
+def get_lessons_by_user(user_id):
+     """Return lessons by user"""
+
+     return Lesson.query.filter(Lesson.author_id == user_id).all()
+
+
+def get_public_lessons(user_id):
+    """Return lessons marked public"""
+
+    return Lesson.query.filter((Lesson.author_id==user_id) & (Lesson.public==True)).all()
 
 
 def get_lesson_by_id(lesson_id):
@@ -123,6 +129,18 @@ def get_user_by_id(user_id):
 def get_user_by_email(email):
     """Get user by email."""
     return User.query.filter(User.email == email).first() 
+
+    
+# CREATE FAVE ASSOCIATIONS
+# def create fave_comp()
+# def create_fave_lesson(lesson_id, liker_id):
+
+
+# def get(user_id):
+#     """Return all lessons favorited by this user."""
+
+#     return Fave_Lessons.query.filter(Fave_Lessons.liker_id == user_id).all()
+
 
 
 if __name__ == '__main__':

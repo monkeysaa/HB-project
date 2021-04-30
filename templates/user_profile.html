@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.user_id }} - Details{% endblock %}
+
+{% block body %}
+<h1>User Details</h1>
+
+<p>{{ user.email }}</p>
+
+<h1> Your Lessons </h1>
+<ul>
+  {% for lesson in lessons %}
+    <li>
+      <a href="/lessons/{{ lesson.lesson_id }}">
+        {{ lesson.title }}
+      </a>
+    </li>
+  {% endfor %}
+  <li>Create a lesson </li>
+</ul>
+
+
+<h1>Search for lessons </h1>
+
+{% endblock %}
+
