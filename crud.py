@@ -66,9 +66,19 @@ def assign_tag_to_lesson(tag, lesson):
     return assoc
 
 
-def assign_img(imgUrl, lesson_id):
+def assign_lesson_img(imgUrl, lesson_id):
     
     lesson = get_lesson_by_id(lesson_id)
+    lesson.imgUrl = imgUrl
+
+    db.session.commit()
+
+    return None
+
+
+def assign_comp_img(imgUrl, comp_id):
+    
+    lesson = get_comp_by_id(lesson_id)
     lesson.imgUrl = imgUrl
 
     db.session.commit()
@@ -93,6 +103,12 @@ def get_components():
     """Return all components."""
 
     return Comp.query.all()
+
+
+def get_comp_by_id(comp_id):
+    """Get comps by id."""
+    
+    return Comp.query.filter(Comp.comp_id==comp_id).one()
 
 
 def get_comp_faves(user_id):

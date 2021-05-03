@@ -15,6 +15,7 @@ app.secret_key = "SECRET!"
 
 # API INFO
 s3 = boto3.resource('s3')
+client = boto3.client('s3')
 CLOUD_KEY = os.environ['CLOUDINARY_KEY']
 CLOUD_SECRET = os.environ['CLOUDINARY_SECRET']
 AWS_KEY = os.environ['AWS_ACCESS_KEY_ID']
@@ -31,6 +32,15 @@ def homepage():
     return render_template('homepage.html')
 
 
+# NAV ROUTES
+# MyProfile link in nav_bar
+@app.route('/profile')
+def display_profile():
+    """Display profile if user. Same as /login endpoint above. """
+    
+    return redirect('/login')
+
+
 # View all users link in Nav. Later, remove this route.
 @app.route('/users')
 def all_users():
@@ -40,7 +50,8 @@ def all_users():
     return render_template('all_users.html', users=users)
 
 
-# Likely remove. Potential: Direct here from search for lesson by author?
+# Direct here from search for lesson by author? 
+# Or remove this route and use JS for dynamic display? 
 @app.route('/users/<user_id>')
 def show_public_lessons(user_id):
     """View all public lessons by a user"""
@@ -59,20 +70,7 @@ def all_lessons():
     return render_template('all_lessons.html', lessons=lessons)
 
 
-# Later, check that lesson is public or user is author or redirect (to where?)
-@app.route('/lessons/<lesson_id>')
-def show_lesson(lesson_id):
-    """Show details on a particular lesson."""
-
-    session['lesson_id'] = lesson_id
-    lesson = crud.get_lesson_by_id(lesson_id)
-
-    if lesson.imgUrl==None:
-        lesson.imgUrl = 'https://res.cloudinary.com/hackbright/image/upload/v1619906696/zzwwu2rbkbve3eozoihx.png'
-
-    return render_template('lesson_details.html', lesson=lesson)
-
-
+# LOGIN ROUTES
 # Homepage login form
 @app.route('/login', methods=['POST'])
 def verify_user():
@@ -115,14 +113,7 @@ def check_if_user():
         return redirect('/')
 
 
-# MyProfile link in nav_bar
-@app.route('/profile')
-def display_profile():
-    """Display profile if user. Same as /login endpoint above. """
-    
-    return redirect('/login')
-
-
+# Sign up & Login for new users, from Homepage
 @app.route('/signup', methods=['POST'])
 def register_user():
     """Create and log in a new user."""
@@ -142,7 +133,7 @@ def register_user():
 
     return render_template('user_profile.html', user=user, lessons=[])
 
-
+# SEARCH ROUTES
 @app.route('/search', methods=['GET'])
 def display_search_results():
     """Search for lesson by term."""
@@ -153,11 +144,27 @@ def display_search_results():
     return render_template('search.html', term=term, lessons=lessons)
 
 
+# LESSON ROUTES
 @app.route('/create_lesson')
 def show_lesson_form():
     """Display a form for user to create lesson."""
 
     return render_template('create_lesson.html')
+
+
+# Details for one lesson
+# Later, limit route access to public lessons or author. Else redirect (to where?)
+@app.route('/lessons/<lesson_id>')
+def show_lesson(lesson_id):
+    """Show details on a particular lesson."""
+
+    session['lesson_id'] = lesson_id
+    lesson = crud.get_lesson_by_id(lesson_id)
+
+    if lesson.imgUrl==None:
+        lesson.imgUrl = 'https://res.cloudinary.com/hackbright/image/upload/v1619906696/zzwwu2rbkbve3eozoihx.png'
+
+    return render_template('lesson_details.html', lesson=lesson)
 
 
 # Directed here from Create-Lesson form
@@ -167,7 +174,8 @@ def display_lesson():
 
     title = request.args.get('title')
 
-    client.upload_file('server.py', 'hackbright-project', pdf)
+    # AWS Upload
+    # client.upload_file('server.py', 'hackbright-project', pdf)
 
     if crud.lesson_exists(title, session['user_id']):
         flash('Lesson with that name already exists. Please try again.')
@@ -176,24 +184,45 @@ def display_lesson():
     new_lesson = crud.create_lesson(title, session['user_id'])
     session['lesson_id'] = new_lesson.lesson_id
 
-    return render_template('show_lesson.html', lesson=new_lesson)
+    return redirect(f'/lessons/{new_lesson.lesson_id}')
     
 
 @app.route('/upload-pic', methods=['POST'])
-def upload_image():
-    """Process the cloudinary form."""
+def upload_lesson_image():
+    """Save img to Lessons in the db and display in via Cloudinary."""
 
     my_file = request.files['my-file'] # note: request arg should match name var on form
     result = cloudinary.uploader.upload(my_file, api_key=CLOUD_KEY, 
                                         api_secret=CLOUD_SECRET,
                                         cloud_name='hackbright')
     img_url = result['secure_url']
-    img_url = crud.assign_img(result['secure_url'], session['lesson_id'])
+    img_url = crud.assign_lesson_img(result['secure_url'], session['lesson_id'])
     # run a crud function that saves this img_url to the database and returns it. 
 
     lesson = crud.get_lesson_by_id(session['lesson_id'])
     # work out display, e.g. <img src="{{ user.profile_url }}">
-    return redirect(f'/lessons/<{lesson.lesson_id}>')
+    return redirect(f'/lessons/{lesson.lesson_id}')
+
+
+@app.route('/upload-comp-img', methods=['POST'])
+def upload_comp_image():
+    """Save img to Lessons in the db and display in via Cloudinary."""
+
+    my_img = request.files['my-img'] # note: request arg should match name var on form
+    
+    #CHEAT! Fix this
+    session['comp_id'] = 1 # REWRITE
+
+    result = cloudinary.uploader.upload(my_img, api_key=CLOUD_KEY, 
+                                        api_secret=CLOUD_SECRET,
+                                        cloud_name='hackbright')
+    img_url = result['secure_url']
+    img_url = crud.assign_comp_img(result['secure_url'], session['comp_id'])
+    # run a crud function that saves this img_url to the database and returns it. 
+
+    lesson = crud.get_lesson_by_id(session['lesson_id'])
+    # work out display, e.g. <img src="{{ user.profile_url }}">
+    return redirect(f'/lessons/{lesson.lesson_id}')
 
 
 if __name__ == '__main__':
