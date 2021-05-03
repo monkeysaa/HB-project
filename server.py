@@ -145,17 +145,10 @@ def display_search_results():
 
 
 # LESSON ROUTES
-@app.route('/create_lesson')
-def show_lesson_form():
-    """Display a form for user to create lesson."""
-
-    return render_template('create_lesson.html')
-
-
 # Details for one lesson
 # Later, limit route access to public lessons or author. Else redirect (to where?)
 @app.route('/lessons/<lesson_id>')
-def show_lesson(lesson_id):
+def display_editable_lesson(lesson_id):
     """Show details on a particular lesson."""
 
     session['lesson_id'] = lesson_id
@@ -167,21 +160,12 @@ def show_lesson(lesson_id):
     return render_template('lesson_details.html', lesson=lesson)
 
 
-# Directed here from Create-Lesson form
-@app.route('/show_new_lesson', methods=['GET'])
-def display_lesson():
-    """Display a lesson."""
+# Directed here from Create-Lesson link
+@app.route('/create_lesson')
+def create_lesson():
+    """Create a new lesson and redirect to editable lesson page."""
 
-    title = request.args.get('title')
-
-    # AWS Upload
-    # client.upload_file('server.py', 'hackbright-project', pdf)
-
-    if crud.lesson_exists(title, session['user_id']):
-        flash('Lesson with that name already exists. Please try again.')
-        return redirect('create_lesson.html')
-
-    new_lesson = crud.create_lesson(title, session['user_id'])
+    new_lesson = crud.create_lesson("Lesson title", session['user_id'])
     session['lesson_id'] = new_lesson.lesson_id
 
     return redirect(f'/lessons/{new_lesson.lesson_id}')
