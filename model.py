@@ -34,6 +34,7 @@ class Lesson(db.Model):
     description = db.Column(db.Text)
     public = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    imgUrl = db.Column(db.String)
 
     author = db.relationship('User', backref = 'lessons')
     comps = db.relationship('Comp', secondary='lesson_comps', viewonly=True)
@@ -55,6 +56,7 @@ class Comp(db.Model):
     text = db.Column(db.Text)
     name = db.Column(db.String)
     url = db.Column(db.String)
+    imgUrl = db.Column(db.String)
     vid_length = db.Column(db.Float) # if video, length in minutes
 
     lessons = db.relationship('Lesson', secondary='lesson_comps', viewonly=True)

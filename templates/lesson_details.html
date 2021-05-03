@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ lesson.title }} - Details{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/style.css">
+{% endblock %}
 
 {% block body %}
 <h1>{{ lesson.title }}</h1>
@@ -8,11 +11,28 @@
 <p>
   {{ lesson.description }}
 </p>
-<button id="angry-button">😠 Don't click me</button>
-<form action='/post-form-data' method='post' enctype='multipart/form-data'>
+<img src='{{lesson.imgUrl}}' width="300" height="300" style='border-radius: 10px'/>
+
+<h1>Change Lesson Pic</h1>
+<form action='/upload-pic' method='post' enctype='multipart/form-data'>
   <input type='file' name='my-file'>
   <input type='submit'>
 </form>
 
+
+<h2>Components</h2>
+<ol>
+  {% for component in lesson.comps %}
+    <li>
+      <a href={{component.url}}>{{ component.name }}</a>
+        <ul>
+          <!-- To Do: Display component image -->
+          <li>Other component info and Image</li>
+        </ul>
+    </li>
+{% endfor %}
+</ol>
+
+<script src="/static/js/test.js"></script>
 
 {% endblock %}

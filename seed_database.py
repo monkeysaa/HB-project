@@ -34,12 +34,13 @@ with open('static/data/components.json') as f:
 comps_in_db = []
 for comp in comp_data:
     #unpack each component in comp_data from json file
-    name, comp_type, url = (comp['name'],
+    name, comp_type, url, imgUrl = (comp['name'],
                             comp['comp_type'],
-                            comp['url'])
+                            comp['url'],
+                            comp['imgUrl'])
 
     # create a component and append it to comps_in_db
-    db_comp = crud.create_comp(name, comp_type, url)
+    db_comp = crud.create_comp(name, comp_type, url, imgUrl)
     comps_in_db.append(db_comp)
 
 # Create fake tags, store them in a list so we can assign them later...
@@ -70,7 +71,7 @@ for lesson in lesson_data:
     user = choice(users_in_db) 
 
     # create a lesson and append it to lessons_in_db
-    db_lesson = crud.create_lesson(title, description, user.user_id, public)
+    db_lesson = crud.create_lesson(title, user.user_id, description, public)
     lessons_in_db.append(db_lesson)
 
     # assign components to lessons by hard-coding

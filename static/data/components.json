@@ -2,51 +2,61 @@
     {
         "name": "How Wolves Change Rivers",
         "comp_type": "video",
-        "url": "https://youtu.be/ysa5OBhXz-Q"
+        "url": "https://youtu.be/ysa5OBhXz-Q",
+        "imgUrl": "/static/img/wolves_rivers.jpg"
     },
     {
         "name": "Wolves of Yellowstone",
         "comp_type": "video",
-        "url": "https://www.nationalgeographic.org/media/wolves-yellowstone/#wolves-of-yellowstone"
+        "url": "https://www.nationalgeographic.org/media/wolves-yellowstone/#wolves-of-yellowstone",
+        "imgUrl": "/static/img/wolves_of_yellowstone.jpg"
     },
     {
         "name": "Grey Wolf Educator Guide",
         "comp_type": "curriculum",
-        "url": "https://www.nationalgeographic.org/media/gray-wolf-educator-guide/?utm_source=BibblioRCM_Row"
+        "url": "https://www.nationalgeographic.org/media/gray-wolf-educator-guide/?utm_source=BibblioRCM_Row",
+        "imgUrl": "/static/img/grey_wolf_educator_guide.jpg"
     },
     {
         "name": "Multiplying fractions completed example",
         "comp_type": "img",
-        "url": "https://wakelet.com/wake/ZANhnTFIL2xy-47beJR_f"
+        "url": "https://wakelet.com/wake/ZANhnTFIL2xy-47beJR_f",
+        "imgUrl": ""
     },
     {
         "name": "Multiplying fractions game",
         "comp_type": "img",
-        "url": "https://www.wootmath.com/interactive/topic/fractions-on-a-number-line"
+        "url": "https://www.wootmath.com/interactive/topic/fractions-on-a-number-line",
+        "imgUrl": ""
     },
     {
         "name": "Multiplying fractions - Khan Academy video & practice",
         "comp_type": "video",
-        "url": "https://www.khanacademy.org/math/cc-fifth-grade-math/5th-multiply-fractions/imp-multiplying-fractions/v/visualizing-fraction-products"
+        "url": "https://www.khanacademy.org/math/cc-fifth-grade-math/5th-multiply-fractions/imp-multiplying-fractions/v/visualizing-fraction-products",
+        "imgUrl": ""
     },
     {
         "name": "Wolves in Yellowstone Worksheet1",
         "comp_type": "link",
-        "url": "https://d43fweuh3sg51.cloudfront.net/media/media_files/Wolves_StudentHandout_Part_1_UPLOAD.pdf"
+        "url": "https://d43fweuh3sg51.cloudfront.net/media/media_files/Wolves_StudentHandout_Part_1_UPLOAD.pdf",
+        "imgUrl": ""
     },
     {
         "name": "Wolves in Yellowstone Worksheet2",
         "comp_type": "link",
-        "url": "https://d43fweuh3sg51.cloudfront.net/media/media_files/Wolves_Student_Worksheet_Part_2_UPLOAD.pdf"
+        "url": "https://d43fweuh3sg51.cloudfront.net/media/media_files/Wolves_Student_Worksheet_Part_2_UPLOAD.pdf",
+        "imgUrl": ""
     },
     {
         "name": "Call to action",
         "comp_type": "link",
-        "url": "https://www.grammarly.com/blog/call-to-action/"
+        "url": "https://www.grammarly.com/blog/call-to-action/",
+        "imgUrl": ""
     },
     {
         "name": "Writing a Hook",
         "comp_type": "video",
-        "url": "https://www.youtube.com/watch?v=K1-nt5_bRlQ"
+        "url": "https://www.youtube.com/watch?v=K1-nt5_bRlQ",
+        "imgUrl": ""
     }
 ]

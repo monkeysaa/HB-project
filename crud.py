@@ -1,6 +1,7 @@
 """CRUD operations."""
 
 from model import *
+from flask import session
 
 def create_user(e, pwd):
     """Create and return a new user."""
@@ -13,7 +14,7 @@ def create_user(e, pwd):
     return new_user
 
 
-def create_lesson(title, description, author_id, public = False):
+def create_lesson(title, author_id, description = "", public = False):
     """Create and return a new lesson."""
 
     new_lesson = Lesson(title=title, description=description, 
@@ -25,11 +26,11 @@ def create_lesson(title, description, author_id, public = False):
     return new_lesson
 
 
-def create_comp(name, comp_type, url = None, text = None, vid_length = None):
+def create_comp(name, comp_type, url = None, imgUrl=None, text = None, vid_length = None):
     """Create and return a new lesson."""
 
     new_component = Comp(name=name, comp_type=comp_type, 
-                        url=url, vid_length=vid_length)
+                        url=url, imgUrl=imgUrl, vid_length=vid_length)
     
     db.session.add(new_component)
     db.session.commit()
@@ -63,6 +64,16 @@ def assign_tag_to_lesson(tag, lesson):
     db.session.commit()
 
     return assoc
+
+
+def assign_img(imgUrl, lesson_id):
+    
+    lesson = get_lesson_by_id(lesson_id)
+    lesson.imgUrl = imgUrl
+
+    db.session.commit()
+
+    return None
 
 
 # Searches
@@ -113,6 +124,24 @@ def get_lesson_by_id(lesson_id):
     
     return Lesson.query.get(lesson_id)
 
+# Do I need this?
+def get_lesson_by_title(title):
+    """Get lessons by title."""
+    print("Add check for unique title per user and verify with user info.")
+    
+    return Lesson.query.filter(Lesson.title==title).first()
+
+def lesson_exists(title, author_id):
+    """Check unique lesson within user."""
+    
+    # Refactor later for efficiency
+    lesson = Lesson.query.filter(
+        (Lesson.title==title) & (Lesson.author_id==author_id)
+        ).first()
+    if lesson==None:
+        return False
+    return True
+
 
 def get_lesson_by_term(term):
     """Basic: Get lessons by search term in title or description."""
@@ -130,7 +159,6 @@ def get_lesson_by_term(term):
                 lessons.append(lesson)
 
     return lessons
-    
 
 
 def get_comp_by_id(comp_id):

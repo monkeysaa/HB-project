@@ -12,4 +12,4 @@ for bucket in s3.buckets.all():
 # s3.download_file('BUCKET_NAME', 'OBJECT_NAME', 'FILE_NAME')
 # client.download_file('hackbright-project', 'Jonah\'s Frog.png', 'test.png')
 
-client.upload_file('server.py', 'hackbright-project', 'server.py')
+client.upload_file('server.py', 'hackbright-project', 'crud.py')
