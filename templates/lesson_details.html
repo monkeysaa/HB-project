@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block body %}
-<h1>{{ lesson.title }}</h1>
+<h1 id='title'>{{ lesson.title }}</h1>
+<button id='edit_title' style='display: inline-block'>Edit title</button>
 
 <p>
   {{ lesson.description }}
@@ -14,7 +15,7 @@
 <img src='{{lesson.imgUrl}}' width="300" height="300" style='border-radius: 10px'/>
 
 <h1>Change Lesson Pic</h1>
-<form action='/upload-pic' method='post' enctype='multipart/form-data'>
+<form action='/lesson-pic' method='POST' enctype='multipart/form-data'>
   <input type='file' name='my-file'>
   <input type='submit'>
 </form>
@@ -23,19 +24,34 @@
 <h2>Components</h2>
 <ol>
   {% for component in lesson.comps %}
-    <li>
+    <li class='display-components'>
+      <img class='comp-img' src='{{component.imgUrl}}'/><br>
       <a href={{component.url}}>{{ component.name }}</a>
         <ul>
           <!-- To Do: Display component image -->
-          <li>Other component info and Image</li>
+          <li>Other component displays</li>
         </ul>
     </li>
 {% endfor %}
 </ol>
 
+<video width="320" height="240" controls>
+  <source src='https://www.youtube.com/watch?v=ysa5OBhXz-Q' type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 <section class='add-component'>
   <button id='add-content'>Add Content to Lesson</button>
+  <div id='pdf-div'>
+  </div>
 </section>
+
+<section class='test'>
+  <div>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ysa5OBhXz-Q?start=6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</section>
+
 
 
 <script src="/static/js/add_comp.js"></script>

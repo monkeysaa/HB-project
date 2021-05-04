@@ -61,13 +61,18 @@ def show_public_lessons(user_id):
     return render_template('user_profile.html', user=user, lessons=pub_lessons)
 
 
-# View all lessons link in Nav. Later, remove this route.
-@app.route('/lessons')
+# View public lessons via link in Nav. Later, remove this route.
+@app.route('/index')
 def all_lessons():
     """View all lessons."""
 
+    lessons_to_display=[]
     lessons = crud.get_all_lessons()
-    return render_template('all_lessons.html', lessons=lessons)
+    for lesson in lessons:
+        if lesson.public==True:
+            lessons_to_display.append(lesson)
+
+    return render_template('index.html', lessons=lessons_to_display)
 
 
 # LOGIN ROUTES
@@ -147,8 +152,8 @@ def display_search_results():
 # LESSON ROUTES
 # Details for one lesson
 # Later, limit route access to public lessons or author. Else redirect (to where?)
-@app.route('/lessons/<lesson_id>')
-def display_editable_lesson(lesson_id):
+@app.route('/lessons/<lesson_id>') # This should be GET
+def show_lesson(lesson_id):
     """Show details on a particular lesson."""
 
     session['lesson_id'] = lesson_id
@@ -160,7 +165,25 @@ def display_editable_lesson(lesson_id):
     return render_template('lesson_details.html', lesson=lesson)
 
 
+# Try to combine with above route. For later, maybe turn to RESTful state?
+@app.route('/lesson-pic', methods=['POST']) # This should be PUT? 
+def upload_lesson_image():
+    """Save img to Lessons in the db and display via Cloudinary."""
+
+    my_file = request.files['my-file'] # note: request arg should match name var on form
+    result = cloudinary.uploader.upload(my_file, api_key=CLOUD_KEY, 
+                                        api_secret=CLOUD_SECRET,
+                                        cloud_name='hackbright')
+    img_url = result['secure_url']
+    img_url = crud.assign_lesson_img(result['secure_url'], session['lesson_id']) 
+
+    lesson = crud.get_lesson_by_id(session['lesson_id'])
+    # work out display, e.g. <img src="{{ user.profile_url }}">
+    return redirect(f'/lessons/{lesson.lesson_id}')
+
+
 # Directed here from Create-Lesson link
+# Later, not supposed to use internal links to create
 @app.route('/create_lesson')
 def create_lesson():
     """Create a new lesson and redirect to editable lesson page."""
@@ -169,30 +192,13 @@ def create_lesson():
     session['lesson_id'] = new_lesson.lesson_id
 
     return redirect(f'/lessons/{new_lesson.lesson_id}')
-    
-
-@app.route('/upload-pic', methods=['POST'])
-def upload_lesson_image():
-    """Save img to Lessons in the db and display in via Cloudinary."""
-
-    my_file = request.files['my-file'] # note: request arg should match name var on form
-    result = cloudinary.uploader.upload(my_file, api_key=CLOUD_KEY, 
-                                        api_secret=CLOUD_SECRET,
-                                        cloud_name='hackbright')
-    img_url = result['secure_url']
-    img_url = crud.assign_lesson_img(result['secure_url'], session['lesson_id'])
-    # run a crud function that saves this img_url to the database and returns it. 
-
-    lesson = crud.get_lesson_by_id(session['lesson_id'])
-    # work out display, e.g. <img src="{{ user.profile_url }}">
-    return redirect(f'/lessons/{lesson.lesson_id}')
 
 
-@app.route('/upload-comp-img', methods=['POST'])
+@app.route('/component-pic', methods=['POST'])
 def upload_comp_image():
     """Save img to Lessons in the db and display in via Cloudinary."""
 
-    my_img = request.files['my-img'] # note: request arg should match name var on form
+    my_pdf = request.files['my-pdf'] # note: request arg should match name var on form
     
     #CHEAT! Fix this
     session['comp_id'] = 1 # REWRITE
@@ -208,6 +214,12 @@ def upload_comp_image():
     # work out display, e.g. <img src="{{ user.profile_url }}">
     return redirect(f'/lessons/{lesson.lesson_id}')
 
+
+
+@app.route('/edit_less_title', methods=['POST'])
+def edit_title():
+
+    pass
 
 if __name__ == '__main__':
     connect_to_db(app,echo=False)

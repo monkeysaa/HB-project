@@ -1,0 +1,18 @@
+.nav > * {
+    padding-inline-start: 100 px 0;
+}
+
+img {
+    border-radius: 8px;
+    width: '300'; 
+    height: '300';
+}
+
+#pdf-div {
+    display: none;
+}
+
+.comp-img {
+    width: '300'; 
+    height: '300';
+}

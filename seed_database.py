@@ -65,13 +65,17 @@ for n in range(4, 13):
 lessons_in_db = []
 for lesson in lesson_data:
     #unpack each lesson in lesson data from json file
-    title, description, public = (lesson['title'], lesson['description'], lesson['public'])
+    title, desc, public, imgUrl = (lesson['title'], 
+                                  lesson['description'], 
+                                  lesson['public'],
+                                  lesson['imgUrl'])
 
     # choose an author at random
-    user = choice(users_in_db) 
+    user = choice(users_in_db)
 
     # create a lesson and append it to lessons_in_db
-    db_lesson = crud.create_lesson(title, user.user_id, description, public)
+    db_lesson = crud.create_lesson(title, user.user_id, desc, public)
+    db_lesson.imgUrl = imgUrl
     lessons_in_db.append(db_lesson)
 
     # assign components to lessons by hard-coding
@@ -101,6 +105,9 @@ for lesson in lesson_data:
             crud.assign_comp(comps_in_db[9], db_lesson)
             tag = crud.get_tag_by_name('Writing')
             crud.assign_tag_to_lesson(tag, db_lesson)
+    
+
+db.session.commit()
 
     
 

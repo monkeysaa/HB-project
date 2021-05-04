@@ -2,21 +2,25 @@
     {
         "title": "Wolves",
         "description": "about wolves",
-        "public": true
+        "public": true,
+        "imgUrl": "/static/img/high5.jpg"
     },
     {
         "title": "Multiplying fractions",
         "description": "about multiplying fractions",
-        "public": false
+        "public": false,
+        "imgUrl": null
     },
     {
         "title": "Trophic cascades",
         "description": "evolution due to trophic cascades",
-        "public": true
+        "public": true,
+        "imgUrl": "/static/img/wolves_rivers.jpg"
     },
     {
         "title": "Call to action intro",
         "description": "about writing CTAs",
-        "public": false
+        "public": false,
+        "imgUrl": null
     }
 ]
