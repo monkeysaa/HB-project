@@ -23,6 +23,10 @@ AWS_SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
 app.jinja_env.undefined = StrictUndefined
 
+GRADES = ['Pre-K', 'K', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th',
+          '9th', '10th', '11th', '12th']
+SUBJECTS = ['Math', 'Writing', 'Reading', 'Science', 'Social Studies', 
+            'Arts/Music', 'Foreign Lang.']
 
 # Routes!
 @app.route('/')
@@ -148,7 +152,7 @@ def display_search_results():
     term = request.args.get('term')
     grade = request.args.get('grade')
     subject = request.args.get('subject')
-    user = int(request.args.get('user'))
+    user = (request.args.get('user'))
     terms = {term: 'term', grade: 'grade', subject: 'subject', user: 'user'}
 
     for category in terms:

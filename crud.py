@@ -3,11 +3,6 @@
 from model import *
 from flask import session
 
-GRADES = ['Pre-K', 'K', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th',
-          '9th', '10th', '11th', '12th']
-SUBJECTS = ['Math', 'Writing', 'Reading', 'Science', 'Social Studies', 
-            'Arts/Music', 'Foreign Lang.']
-
 def create_user(e, pwd):
     """Create and return a new user."""
 
@@ -196,10 +191,10 @@ def process_lesson_search(category, arg):
     print(category)
     if category == 'term':
         lessons = get_lessons_by_term(arg)
-    # elif type == 'subject' or type == 'grade':
-    #   lessons = get_lessons_by_tag(str(arg))
+    elif category == 'subject' or category == 'grade':
+        lessons = get_lessons_by_tag(arg)
     elif category == 'user':
-        lessons = get_lessons_by_user(arg)
+        lessons = get_lessons_by_user(int(arg))
     
     return lessons
 

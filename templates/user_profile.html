@@ -21,19 +21,24 @@
 
 <h1>Search for lessons </h1>
 <form action="/search">
-  <p>
-    Search for lessons with the exact term: <input type="text" name="term">
-    <input type="submit">
-  </p>
-<form>
-<!-- Build search for lessons by creator-->
-<form action="/search">
-  <p>
-    Search for lessons by user_id: <input type="text" name="user">
-    <input type="submit">
-  </p>
-<form> 
+  Search for lessons with the exact term: <input type="text" name="term"><br>
+  Search for lessons by user_id: <input type="text" name="user"><br>
   <!-- later expand to add multiple terms -->
+  Search for lessons by grade:
+  <select name="grade">
+    <option value=''> </option>
+    <option value="4th">4th</option>
+    <option value="5th">5th</option>
+    <option value="6th">6th</option>
+  </select>
+  Search for lessons by subject:
+  <select name="subject">
+    <option value=''> </option>
+    <option value="Science">Science</option>
+    <option value="Math">Math</option>
+    <option value="Writing">Writing</option>
+  </select>
+  <input type="submit">
 </form>
 
 {% endblock %}
