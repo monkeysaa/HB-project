@@ -28,10 +28,10 @@ document.querySelector('#add-content').addEventListener('click', () => {
 const edit_title = () => {
   console.log('now edit title.');
 }
-document.querySelector('#add-pdf').addEventListener('click', () => {
-  console.log('Tried to add add-pdf functionality');
-  }
-);
+// document.querySelector('#add-pdf').addEventListener('click', () => {
+//   console.log('Tried to add add-pdf functionality');
+//   }
+// );
 
 document.querySelector('#edit_title').addEventListener('click', () => {
   edit_title();

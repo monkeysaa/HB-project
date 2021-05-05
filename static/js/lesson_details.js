@@ -2,7 +2,7 @@
 console.log('JS activated!');
 
 // update lesson stuff
-on lose focus, event-handler that tells title to update in the back end
+// on lose focus, event-handler that tells title to update in the back end
 
 // update component stuff
 const add_pdf = () => {
@@ -23,12 +23,15 @@ document.querySelector('#add-content').addEventListener('click', () => {
   );
   
   const edit_title = () => {
-    console.log('now edit title.');
+    console.log('now editing title.');
+    
+    document.getElementById('title').innerHTML
   }
-  document.querySelector('#add-pdf').addEventListener('click', () => {
-    console.log('Tried to add add-pdf functionality');
-    }
-  );
+
+//   document.querySelector('#add-pdf').addEventListener('click', () => {
+//     console.log('Tried to add add-pdf functionality');
+//     }
+//   );
   
 document.querySelector('#edit_title').addEventListener('click', () => {
     edit_title();

@@ -12,7 +12,7 @@
 <p>
   {{ lesson.description }}
 </p>
-<img src='{{lesson.imgUrl}}' width="300" height="300" style='border-radius: 10px'/>
+<img class='lesson' src='{{lesson.imgUrl}}'/>
 
 <h1>Change Lesson Pic</h1>
 <form action='/lesson-pic' method='POST' enctype='multipart/form-data'>
@@ -25,20 +25,40 @@
 <ol>
   {% for component in lesson.comps %}
     <li class='display-components'>
-      <img class='comp-img' src='{{component.imgUrl}}'/><br>
       <a href={{component.url}}>{{ component.name }}</a>
-        <ul>
-          <!-- To Do: Display component image -->
+    <ul>
+    {% if component.name == "How Wolves Change Rivers" %}
+      <section class='video_test'>
+        <iframe width="560" 
+                height="315" 
+                src="https://www.youtube.com/embed/ysa5OBhXz-Q" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+      </section>
+    {% elif component.name == "Multiplying fractions - Khan Academy video & practice" %}
+      <iframe width="817" 
+              height="460" 
+              src="https://www.youtube.com/embed/hr_mTd-oJ-M" 
+              title="YouTube video player" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen></iframe>
+    {% else %}
+      <img class='comp-img' src='{{component.imgUrl}}'/><br>
+    {% endif %}
+
           <li>Other component displays</li>
-        </ul>
+    </ul>
     </li>
-{% endfor %}
+  {% endfor %}
 </ol>
 
-<video width="320" height="240" controls>
-  <source src='https://www.youtube.com/watch?v=ysa5OBhXz-Q' type="video/mp4">
+<!-- <video width="320" height="240" controls>
+  <source src='link' type="video/mp4">
   Your browser does not support the video tag.
-</video>
+</video> -->
 
 <section class='add-component'>
   <button id='add-content'>Add Content to Lesson</button>
@@ -46,14 +66,10 @@
   </div>
 </section>
 
-<section class='test'>
-  <div>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/ysa5OBhXz-Q?start=6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
-</section>
 
 
 
-<script src="/static/js/add_comp.js"></script>
+
+<script src="/static/js/lesson_details.js"></script>
 
 {% endblock %}
