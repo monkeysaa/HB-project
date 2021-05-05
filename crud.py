@@ -3,6 +3,11 @@
 from model import *
 from flask import session
 
+GRADES = ['Pre-K', 'K', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th',
+          '9th', '10th', '11th', '12th']
+SUBJECTS = ['Math', 'Writing', 'Reading', 'Science', 'Social Studies', 
+            'Arts/Music', 'Foreign Lang.']
+
 def create_user(e, pwd):
     """Create and return a new user."""
 
@@ -86,6 +91,18 @@ def assign_comp_img(imgUrl, comp_id):
     return None
 
 
+def lesson_exists(title, author_id):
+    """Check unique lesson within user."""
+    
+    # Refactor later for efficiency
+    lesson = Lesson.query.filter(
+        (Lesson.title==title) & (Lesson.author_id==author_id)
+        ).first()
+    if lesson==None:
+        return False
+    return True
+
+
 # Searches
 def get_all_lessons():
     """Return all lessons."""
@@ -122,11 +139,13 @@ def get_tag_by_name(name):
     
     return Tag.query.filter(Tag.name == name).first()
 
+def get_lessons_by_tag(tag):
 
-def get_lessons_by_user(user_id):
-     """Return lessons by user"""
+    return get_tag_by_name(tag).lessons
 
-     return Lesson.query.filter(Lesson.author_id == user_id).all()
+# def get_components_by_tag(tag):
+
+#     return get_comp_by_name(tag).comps
 
 
 def get_public_lessons(user_id):
@@ -140,26 +159,21 @@ def get_lesson_by_id(lesson_id):
     
     return Lesson.query.get(lesson_id)
 
-# Do I need this?
+
 def get_lesson_by_title(title):
     """Get lessons by title."""
     print("Add check for unique title per user and verify with user info.")
     
     return Lesson.query.filter(Lesson.title==title).first()
 
-def lesson_exists(title, author_id):
-    """Check unique lesson within user."""
-    
-    # Refactor later for efficiency
-    lesson = Lesson.query.filter(
-        (Lesson.title==title) & (Lesson.author_id==author_id)
-        ).first()
-    if lesson==None:
-        return False
-    return True
+# USER Search Functions
+def get_lessons_by_user(user_id):
+     """Return lessons by user"""
+
+     return Lesson.query.filter(Lesson.author_id == user_id).all()
 
 
-def get_lesson_by_term(term):
+def get_lessons_by_term(term):
     """Basic: Get lessons by search term in title or description."""
 
     lessons = Lesson.query.filter((Lesson.title.like(f'%{term}%')) | 
@@ -174,6 +188,19 @@ def get_lesson_by_term(term):
             if lesson not in lessons:
                 lessons.append(lesson)
 
+    return lessons
+
+# better to use a dispatcher vs. if/else?
+def process_lesson_search(category, arg):
+    
+    print(category)
+    if category == 'term':
+        lessons = get_lessons_by_term(arg)
+    # elif type == 'subject' or type == 'grade':
+    #   lessons = get_lessons_by_tag(str(arg))
+    elif category == 'user':
+        lessons = get_lessons_by_user(arg)
+    
     return lessons
 
 

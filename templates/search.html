@@ -2,7 +2,7 @@
 {% block title %}Search Results{% endblock %}
 
 {% block body %}
-<h1>Lessons with "{{ term }}"</h1>
+<h1>Search Results</h1>
 
 <ul>
   {% for lesson in lessons %}
@@ -13,14 +13,5 @@
     </li>
   {% endfor %}
 </ul>
-
-<h1>Lessons by author</h1>
-  <div id=author></div>
-
-<h1>Lessons by grade</h1>
-  <div id=grade></div>
-
-<h1>Lessons by subject</h1>
-  <div id=subject></div>
 
 {% endblock %}

@@ -138,13 +138,24 @@ def register_user():
 
     return render_template('user_profile.html', user=user, lessons=[])
 
+
 # SEARCH ROUTES
 @app.route('/search', methods=['GET'])
 def display_search_results():
     """Search for lesson by term."""
     
+    lesson_matches = set()
     term = request.args.get('term')
-    lessons = crud.get_lesson_by_term(term)
+    grade = request.args.get('grade')
+    subject = request.args.get('subject')
+    user = int(request.args.get('user'))
+    terms = {term: 'term', grade: 'grade', subject: 'subject', user: 'user'}
+
+    for category in terms:
+        if category:
+            lessons = crud.process_lesson_search(terms[category], category)
+            for lesson in lessons:
+                lesson_matches.add(lesson)
 
     return render_template('search.html', term=term, lessons=lessons)
 
