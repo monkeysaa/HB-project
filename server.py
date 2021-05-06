@@ -15,7 +15,7 @@ app.secret_key = "SECRET!"
 
 # API INFO
 s3 = boto3.resource('s3')
-client = boto3.client('s3')
+CLIENT = boto3.client('s3')
 CLOUD_KEY = os.environ['CLOUDINARY_KEY']
 CLOUD_SECRET = os.environ['CLOUDINARY_SECRET']
 AWS_KEY = os.environ['AWS_ACCESS_KEY_ID']
@@ -209,23 +209,29 @@ def create_lesson():
     return redirect(f'/lessons/{new_lesson.lesson_id}')
 
 
-@app.route('/component-pic', methods=['POST'])
-def upload_comp_image():
-    """Save img to Lessons in the db and display in via Cloudinary."""
+@app.route('/component', methods=['POST'])
+def create_component():
+    """Add component to Lessons in the db and display via Cloudinary."""
 
-    my_pdf = request.files['my-pdf'] # note: request arg should match name var on form
+    my_file = request.files['my-file'] # note: request arg should match name var on form
     
-    #CHEAT! Fix this
-    session['comp_id'] = 1 # REWRITE
+    #Upload to Cloudinary
+    # result = cloudinary.uploader.upload(my_file, api_key=CLOUD_KEY, 
+    #                                     api_secret=CLOUD_SECRET,
+    #                                     cloud_name='hackbright')
 
-    result = cloudinary.uploader.upload(my_img, api_key=CLOUD_KEY, 
-                                        api_secret=CLOUD_SECRET,
-                                        cloud_name='hackbright')
-    img_url = result['secure_url']
-    img_url = crud.assign_comp_img(result['secure_url'], session['comp_id'])
-    # run a crud function that saves this img_url to the database and returns it. 
+    result = CLIENT.upload_file('my_file', 'hackbright-project', 'pdf')
+    
+    #Create component
+    component = crud.create_comp('pdf', 'pdf')
+    session['comp_id'] = component.comp_id
+    # component.url = result['secure_url']
 
+    #Attach to lesson
     lesson = crud.get_lesson_by_id(session['lesson_id'])
+    crud.assign_comp(component, lesson)
+    # run a crud function that saves this url to the database and returns it. 
+
     # work out display, e.g. <img src="{{ user.profile_url }}">
     return redirect(f'/lessons/{lesson.lesson_id}')
 
