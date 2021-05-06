@@ -22,26 +22,25 @@
   </head>
   <body>
     <nav class="navbar">
-      <a class="navbar-brand" href="/"> Home</a>
-      <form class="navbar-form form-inline">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <a class="navbar-brand" href="/profile"> Profile</a>
+      <a class="navbar-brand" href="/index">Lessons  </a>
+      <a class="navbar-brand" href="/users">Users</a>
+      <form class="navbar-form form-inline navbar-right">
         <div class="input-group search-box">
           <input type="text" id="search" class="form-control"
           placeholder="Search here...">
           <span class="input-group-btn">
             <button type="button" class="btn btn-default">
-              <i class="fa fa-search"></i></button>
+              <i class="fa fa-search" style:></i></button>
           </span>
         </div>
       </form>
-      <a class="navbar-brand" href="/profile"> My Profile</a>
-      <a class="navbar-brand" href="/index">View all lessons  </a>
-      <a class="navbar-brand" href="/users">View all users</a>
-      <!--       <div class="navbar-brand navbar-right dropdown"> -->
       <a data-toggle="dropdown" class="navbar-brand navbar-right" href="#" aria-expanded="true">
           <i class="fa fa-user-o"></i>Login</a>
         <ul class="dropdown-menu">
           <li>
-            <form class="form-inline login-form" action="/examples/actions/confirmation.php" method="POST">
+            <form class="form-inline login-form" action="/login" method="POST">
               <div class="input group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                 <input type="text" class="form-control" placeholder="Username" required>
@@ -54,12 +53,15 @@
             </form>
           </li>
         </ul>
-        </div>
         <a data-toggle="dropdown" class="navbar-brand navbar-right" href="#" aria-expanded="true">
-          <i class="fa fa-user-o"></i>Sign Up</a>
+          <i class="fa fa-user"></i>Sign Up</a>
         <ul class="dropdown-menu">
           <li>
-            <form class="form-inline login-form" action="/examples/actions/confirmation.php" method="POST">
+            <form class="form-inline login-form" action="/signup" method="POST">
+              <div class="input group">
+                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                <input type="text" class="form-control" placeholder="Email" required>
+              </div>
               <div class="input group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                 <input type="text" class="form-control" placeholder="Username" required>
@@ -68,7 +70,7 @@
                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
                 <input type="text" class="form-control" placeholder="Password" required>
               </div>
-              <button type="submit" class="btn btn-primary">Login</button>
+              <button type="submit" class="btn btn-primary">Sign Up</button>
             </form>
           </li>
         </ul>
