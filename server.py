@@ -79,7 +79,97 @@ def all_lessons():
     return render_template('index.html', lessons=lessons_to_display)
 
 
+@app.route('/lessons')
+def display_lessons():
+    """Display all lessons using React"""
+
+    return render_template('all-lessons-react.html')
+
+@app.route('/react')
+def show_one_lesson_react():
+    """React testing zone: Display a single lesson in React"""
+
+    return render_template('single-lesson-react.html')
+
+
+@app.route("/lessons/<lesson_id>.json")
+def get_lesson_json(lesson_id):
+    """Return a JSON response with all cards in DB."""
+
+    lesson = crud.get_lesson_by_id(lesson_id)
+    print(lesson)
+
+    if lesson.imgUrl == None:
+        lesson.imgUrl = 'https://res.cloudinary.com/hackbright/image/upload/v1619906696/zzwwu2rbkbve3eozoihx.png'
+    
+    lesson_data = []
+    lesson_data.append(
+        {
+            "lesson_id": lesson.lesson_id,
+            "title": lesson.title,
+            "author": lesson.author.email,
+            "imgUrl": lesson.imgUrl,
+            "component": lesson.comps[0].name,
+            "c_type": lesson.comps[0].comp_type,
+            "c_link": lesson.comps[0].url,
+            "c_img": lesson.comps[0].imgUrl,
+        }
+    )
+
+    return {"lesson": lesson_data}
+
+
+@app.route("/lessons.json")
+def get_lessons_json():
+    """Return a JSON response with all cards in DB."""
+
+    lessons = crud.get_all_lessons()
+    lessons_list = []
+
+    for lesson in lessons:
+        if lesson.imgUrl == None:
+            lesson.imgUrl = 'https://res.cloudinary.com/hackbright/image/upload/v1619906696/zzwwu2rbkbve3eozoihx.png'
+
+        lessons_list.append(
+            {
+                "lesson_id": lesson.lesson_id,
+                "title": lesson.title,
+                "author": lesson.author.email,
+                "imgUrl": lesson.imgUrl,
+            }
+        )
+
+    return {"lessons": lessons_list}
+
 # LOGIN ROUTES
+@app.route('/signup')
+def display_signup_form():
+    """Display form to take in user data."""
+
+    return render_template('signup.html')
+
+
+# Sign up & Login for new users, from Homepage
+@app.route('/signup', methods=['POST'])
+def register_user():
+    """Create and log in a new user."""
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    # Check if user email is already in the database
+    user = crud.get_user_by_email(email)
+    try:
+        user = crud.create_user(email, password)
+    except:
+        flash('Email is already in use. Try again.')
+        return redirect('/')
+
+    session['user_id'] = user.user_id
+
+    return render_template('user_profile.html', user=user, lessons=[])
+
+
 # Homepage login form
 @app.route('/login', methods=['POST'])
 def verify_user():
@@ -120,27 +210,6 @@ def check_if_user():
     except:
         flash('Please log in first.')
         return redirect('/')
-
-
-# Sign up & Login for new users, from Homepage
-@app.route('/signup', methods=['POST'])
-def register_user():
-    """Create and log in a new user."""
-
-    email = request.form.get('email')
-    password = request.form.get('password')
-    
-    # Check if user email is already in the database
-    user = crud.get_user_by_email(email)
-    try:
-        user = crud.create_user(email, password)
-    except:
-        flash('Email is already in use. Try again.')
-        return redirect('/')
-
-    session['user_id'] = user.user_id
-
-    return render_template('user_profile.html', user=user, lessons=[])
 
 
 # SEARCH ROUTES

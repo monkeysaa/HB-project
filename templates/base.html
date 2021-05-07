@@ -6,6 +6,11 @@
     <title>
       {% block title %}{% endblock %}
     </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js" crossorigin></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src='https://unpkg.com/react-router@5.2.0/umd/react-router.min' crossorigin></script>
+      <script src='https://unpkg.com/react-router-dom@5.2.0/umd/react-router-dom.min' crossorigin></script>
     <script
       src="http://code.jquery.com/jquery-3.5.1.js"
       integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
@@ -37,7 +42,7 @@
         </div>
       </form>
       <a data-toggle="dropdown" class="navbar-brand navbar-right" href="#" aria-expanded="true">
-          <i class="fa fa-user-o"></i>Login</a>
+          <i class="fa fa-user-circle"></i>Login</a>
         <ul class="dropdown-menu">
           <li>
             <form class="form-inline login-form" action="/login" method="POST">
@@ -53,40 +58,20 @@
             </form>
           </li>
         </ul>
-        <a data-toggle="dropdown" class="navbar-brand navbar-right" href="#" aria-expanded="true">
-          <i class="fa fa-user"></i>Sign Up</a>
-        <ul class="dropdown-menu">
-          <li>
-            <form class="form-inline login-form" action="/signup" method="POST">
-              <div class="input group">
-                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                <input type="text" class="form-control" placeholder="Email" required>
-              </div>
-              <div class="input group">
-                <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Username" required>
-              </div>
-              <div class="input group">
-                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="text" class="form-control" placeholder="Password" required>
-              </div>
-              <button type="submit" class="btn btn-primary">Sign Up</button>
-            </form>
-          </li>
-        </ul>
+        <a href="/signup" class="navbar-brand navbar-right" href="#" aria-expanded="true">
+          <i class="fa fa-user-o"></i>Sign Up</a>
         </div>
     </nav>
     
-    <main>
     {% for msg in get_flashed_messages() %}
       <p class="flash-msg">
         {{ msg }}
       </p>
     {% endfor %}
 
+    {% block js %}{% endblock %}
+
     {% block body %}{% endblock %}
 
-    {% block after_body %}{% endblock %}
-    </main>
   </body>
 </html>

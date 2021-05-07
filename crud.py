@@ -3,10 +3,10 @@
 from model import *
 from flask import session
 
-def create_user(e, pwd):
+def create_user(handle, email, pwd):
     """Create and return a new user."""
 
-    new_user = User(email=e, password=pwd)
+    new_user = User(handle=handle, email=email, password=pwd)
 
     db.session.add(new_user)
     db.session.commit()

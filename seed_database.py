@@ -19,10 +19,11 @@ with open('static/data/lessons.json') as f:
 # Create users, store them in list so we can assign fake lessons to them
 users_in_db = []
 for n in range(3):
+    handle = f'User{n}'
     email = f'user{n}@test.com'  # Voila! A unique email!
     password = 'test'
     # create a user here
-    user = crud.create_user(email, password)
+    user = crud.create_user(handle, email, password)
     users_in_db.append(user)
 
 # Load component data from JSON file

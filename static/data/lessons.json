@@ -3,7 +3,7 @@
         "title": "Wolves",
         "description": "about wolves",
         "public": true,
-        "imgUrl": "/static/img/high5.jpg"
+        "imgUrl": "/static/img/grey_wolves.png"
     },
     {
         "title": "Multiplying fractions",
@@ -20,7 +20,7 @@
     {
         "title": "Call to action intro",
         "description": "about writing CTAs",
-        "public": false,
-        "imgUrl": null
+        "public": true,
+        "imgUrl": "/static/img/img1.jpg"
     }
 ]

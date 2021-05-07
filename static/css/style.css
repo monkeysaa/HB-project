@@ -1,4 +1,4 @@
-img.lesson {
+img {
     border-radius: 8px;
     width: 550px; 
     height: 350px;
@@ -46,9 +46,10 @@ main {
 }
 .navbar img {
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 1em;
+    height: 1em;
     margin-right: 1em;
+    box-align: center;
 }
 .navbar .navbar-brand {
     color: #efe5ff;
@@ -85,6 +86,11 @@ main {
 .input-group-btn {
     padding-right: 1em;
 }
+.btn-default {
+    background-color: rgb(250, 247, 253);
+    line-height: 1.5em;
+}
+
 .search-box .input-group-addon {
     min-width: 5em;
     max-width: 30vp;;
@@ -108,11 +114,20 @@ main {
     margin: 0em;
 }
 
+.navbar .navbar-right .dropdown-menu {
+    width: 5em;
+    padding: 2em;
+    left: auto;
+    right: 0;
+    font-size: 1.5em;
+}
+
 .navbar .dropdown-menu .material-icons {
     font-size: 1.2em;
     line-height: 1.2em;
     vertical-align: middle;
     margin-top: -2px;
+    padding: .5 em;
 }
 .navbar .dropdown.open > a, .navbar .dropdown.open > a:hover, .navbar .dropdown.open > a:focus {
     color: #fff;
@@ -215,4 +230,9 @@ main {
 
 .input-group-addon {
     padding-right: 1.5em;
+}
+
+.fa {
+    padding-left: .5em;
+    text-align: center;
 }

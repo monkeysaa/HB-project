@@ -14,6 +14,7 @@ class User(db.Model):
                         autoincrement=True,
                         primary_key=True
                         )
+    handle = db.Column(db.String, unique=True, nullable=False)                 
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
 
